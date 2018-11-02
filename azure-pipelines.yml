@@ -1,33 +1,32 @@
 # run the same job on 2 CI machines in parallel
 # https://docs.microsoft.com/en-us/vsts/pipelines/process/phases
-
-pool:
-  vmImage: 'Ubuntu 16.04'
-  
-steps:
+phases:
+- phase: Test
+  queue: 'Hosted Linux Preview'
+  steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
 
+  # VSTS hosted Linux agents already have a LOT of dependencies preinstalled
+  # https://github.com/Microsoft/vsts-agent-docker
+  # so we don't have to install all recommended Cypress dependencies
+  # https://on.cypress.io/continuous-integration#Dependencies
   - script: |
-      sudo apt-get update && sudo apt-get install -y libgconf-2-4
+      apt-get update && apt-get install -y libgconf-2-4
     displayName: 'install dependencies'
-
   - script: |
-      sudo npm install
+      npm ci
     displayName: 'npm install and build'
-
   # always interesting to see build-related environment variables
   # https://docs.microsoft.com/en-us/vsts/pipelines/build/variables?view=vsts
   - script: |
-      sudo npm run print-env -- BUILD
+      npm run print-env -- BUILD
     displayName: 'print environment variables'
-
   - script: |
-      sudo npm run cy:verify
+      npm run cy:verify
     displayName: 'Cypress verify'
-
   - script: |
-      sudo npm run test:ci:record
+      npm run test:ci:record
     displayName: 'Run Cypress tests'
