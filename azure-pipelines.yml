@@ -11,11 +11,11 @@ steps:
     displayName: 'Install Node.js'
 
   - script: |
-      apt-get update && apt-get install -y libgconf-2-4
+      sudo apt-get update && sudo apt-get install -y libgconf-2-4
     displayName: 'install dependencies'
 
   - script: |
-      npm ci
+      sudo npm ci
     displayName: 'npm install and build'
 
   # always interesting to see build-related environment variables
@@ -25,9 +25,9 @@ steps:
     displayName: 'print environment variables'
 
   - script: |
-      npm run cy:verify
+      sudo npm run cy:verify
     displayName: 'Cypress verify'
 
   - script: |
-      npm run test:ci:record
+      sudo npm run test:ci:record
     displayName: 'Run Cypress tests'
